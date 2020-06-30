@@ -1,8 +1,5 @@
-import resource    from './resource';
-import {
-  excludedFields,
-  historicalLocations
-} from '../constants';
+import resource from './resource'
+import { excludedFields, historicalLocations } from '../constants'
 
 /**
  * Implementation of 8.2.3 "HistoricalLocation"
@@ -51,9 +48,9 @@ import {
  * }
  **/
 
-const endpoint = historicalLocations;
-const exclude  = excludedFields[historicalLocations];
+const endpoint = historicalLocations
+const exclude = excludedFields[historicalLocations]
 
 module.exports = function historicalLocationsRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

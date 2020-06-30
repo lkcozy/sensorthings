@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
-import { observationTypes } from '../constants';
+import { observationTypes } from '../constants'
 
 /**
  * 8.2.4 Datastream Entity
@@ -70,89 +70,99 @@ import { observationTypes } from '../constants';
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Datastream = sequelize.define('Datastreams', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-    unitOfMeasurement: { type: DataTypes.JSONB, allowNull: false },
-    // XXX  Define observationType property #15
-    // observationType: { type: DataTypes.INTEGER, allowNull: false },
-    observedArea: { type: DataTypes.GEOMETRY('POINT', 4326) },
-    observationType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [ Object.keys(observationTypes).map(type => {
-          return observationTypes[type];
-        })]
-      }
-    },
-    phenomenonTime: {
-      type: DataTypes.DATE,
-      get: function get() {
-        const time = this.getDataValue('phenomenonTime');
-        if (!time) {
-          return;
-        }
-        return new Date(time).toISOString();
+  const Datastream = sequelize.define(
+    'Datastreams',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      set: function set(value) {
-        if (!value) {
-          return this.setDataValue('phenomenonTime', null);
-        }
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      description: { type: DataTypes.STRING(500), allowNull: false },
+      unitOfMeasurement: { type: DataTypes.JSONB, allowNull: false },
+      // XXX  Define observationType property #15
+      // observationType: { type: DataTypes.INTEGER, allowNull: false },
+      observedArea: { type: DataTypes.GEOMETRY('POINT', 4326) },
+      observationType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: [
+            Object.keys(observationTypes).map(type => {
+              return observationTypes[type]
+            }),
+          ],
+        },
+      },
+      phenomenonTime: {
+        type: DataTypes.DATE,
+        get: function get() {
+          const time = this.getDataValue('phenomenonTime')
+          if (!time) {
+            return
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            return this.setDataValue('phenomenonTime', null)
+          }
 
-        this.setDataValue('phenomenonTime', new Date(value).toISOString());
-      }
-    },
-    resultTime: {
-      type: DataTypes.DATE,
-      get: function get() {
-        const time = this.getDataValue('resultTime');
-        if (!time) {
-          return;
-        }
-        return new Date(time).toISOString();
+          this.setDataValue('phenomenonTime', new Date(value).toISOString())
+        },
       },
-      set: function set(value) {
-        if (!value) {
-          return this.setDataValue('resultTime', null);
-        }
-        this.setDataValue('resultTime', new Date(value).toISOString());
-      }
+      resultTime: {
+        type: DataTypes.DATE,
+        get: function get() {
+          const time = this.getDataValue('resultTime')
+          if (!time) {
+            return
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            return this.setDataValue('resultTime', null)
+          }
+          this.setDataValue('resultTime', new Date(value).toISOString())
+        },
+      },
+    },
+    {
+      classMethods: {
+        associate: db => {
+          Datastream.belongsTo(db.Things)
+          Datastream.associations.Thing.mandatory = true
+          Datastream.belongsTo(db.Sensors)
+          Datastream.associations.Sensor.mandatory = true
+          Datastream.belongsTo(db.ObservedProperties)
+          Datastream.associations.ObservedProperty.mandatory = true
+          Datastream.hasMany(db.Observations)
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
     }
-  }, {
-    classMethods: {
-      associate: db => {
-        Datastream.belongsTo(db.Things);
-        Datastream.associations.Thing.mandatory = true;
-        Datastream.belongsTo(db.Sensors);
-        Datastream.associations.Sensor.mandatory = true;
-        Datastream.belongsTo(db.ObservedProperties);
-        Datastream.associations.ObservedProperty.mandatory = true;
-        Datastream.hasMany(db.Observations);
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+  )
 
-  return Datastream;
+  return Datastream
 }

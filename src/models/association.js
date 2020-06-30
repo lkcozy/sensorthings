@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
-import db from './db';
+import db from './db'
 
-import { getModelName } from '../utils';
+import { getModelName } from '../utils'
 
 import {
   datastreams,
@@ -18,128 +18,150 @@ import {
   observations,
   observedProperties,
   sensors,
-  things
-} from '../constants';
+  things,
+} from '../constants'
 
 import {
   BAD_REQUEST,
   ERRNO_BAD_REQUEST,
   ERRNO_INVALID_ASSOCIATION,
   ERRNO_MANDATORY_ASSOCIATION_MISSING,
-  INTERNAL_ERROR
-} from '../errors';
-
+  INTERNAL_ERROR,
+} from '../errors'
 
 /*
  * Converts a Location into a FeatureOfInterest
  */
 const featureOfInterestFromLocation = locationObject => {
   if (!locationObject) {
-    return null;
+    return null
   }
 
-  const options = locationObject.$modelOptions && locationObject.$modelOptions;
+  const options = locationObject.$modelOptions && locationObject.$modelOptions
   if (options && options.name.plural === featuresOfInterest) {
     return {
-      '@iot.id': locationObject.id
-    };
+      '@iot.id': locationObject.id,
+    }
   }
 
-  const location = locationObject.dataValues || locationObject;
-  const feature = Object.assign({}, {
-    name: location.name,
-    description: location.description,
-    encodingType: location.encodingType
-  });
-  feature.feature = Object.assign({}, location.location);
-  Reflect.deleteProperty(feature, 'location');
-  return feature;
+  const location = locationObject.dataValues || locationObject
+  const feature = Object.assign(
+    {},
+    {
+      name: location.name,
+      description: location.description,
+      encodingType: location.encodingType,
+    }
+  )
+  feature.feature = Object.assign({}, location.location)
+  Reflect.deleteProperty(feature, 'location')
+  return feature
 }
 
-const applyAssociation = (transaction, instance,
-                          modelToAssociateWith,
-                          association,
-                          associatedEntityId,
-                          associatedEntityIdOverride,
-                          exclude) => {
-  return modelToAssociateWith.findById(associatedEntityId, {
-    attributes: { exclude },
-    transaction
-  }).then(found => {
-    if (!found) {
-      return Promise.reject({
-        name: BAD_REQUEST,
-        errno: ERRNO_INVALID_ASSOCIATION,
-        errors: 'Invalid association. ' +
-                modelToAssociateWith.options.name.singular + ' with id ' +
-                associatedEntityId + ' not found'
-      });
-    }
-
-    let accessor = association.isMultiAssociation ? 'add' : 'set';
-
-    return instance[association.accessors[accessor]](
-      associatedEntityIdOverride || found,
-      { transaction }
-    ).then(result => {
-      if (!association.afterAssociation) {
-        return result;
+const applyAssociation = (
+  transaction,
+  instance,
+  modelToAssociateWith,
+  association,
+  associatedEntityId,
+  associatedEntityIdOverride,
+  exclude
+) => {
+  return modelToAssociateWith
+    .findById(associatedEntityId, {
+      attributes: { exclude },
+      transaction,
+    })
+    .then(found => {
+      if (!found) {
+        return Promise.reject({
+          name: BAD_REQUEST,
+          errno: ERRNO_INVALID_ASSOCIATION,
+          errors:
+            'Invalid association. ' +
+            modelToAssociateWith.options.name.singular +
+            ' with id ' +
+            associatedEntityId +
+            ' not found',
+        })
       }
 
-      // Sequelize does not allow hooks for associations related actions,
-      // so we allow models to define an 'afterAssociation' function that
-      // will be called after applying an association.
-      // This is used for example by Things and Locations models, to create
-      // HistoricalLocations entities as required by the spec:
-      //   "When a Thing has a new Location, a new HistoricalLocation SHALL
-      //    be created and added to the Thing automatically by the service.
-      //    The current Location of the Thing SHALL only be added to
-      //    HistoricalLocation automatically by the service, and SHALL not
-      //    be created as HistoricalLocation directly by user."
-      return association.afterAssociation(transaction, instance,
-                                          associatedEntityId);
-    });
-  });
-};
+      let accessor = association.isMultiAssociation ? 'add' : 'set'
+
+      return instance[
+        association.accessors[accessor]
+      ](associatedEntityIdOverride || found, { transaction }).then(result => {
+        if (!association.afterAssociation) {
+          return result
+        }
+
+        // Sequelize does not allow hooks for associations related actions,
+        // so we allow models to define an 'afterAssociation' function that
+        // will be called after applying an association.
+        // This is used for example by Things and Locations models, to create
+        // HistoricalLocations entities as required by the spec:
+        //   "When a Thing has a new Location, a new HistoricalLocation SHALL
+        //    be created and added to the Thing automatically by the service.
+        //    The current Location of the Thing SHALL only be added to
+        //    HistoricalLocation automatically by the service, and SHALL not
+        //    be created as HistoricalLocation directly by user."
+        return association.afterAssociation(
+          transaction,
+          instance,
+          associatedEntityId
+        )
+      })
+    })
+}
 
 /*
  * Finds or creates an specific entity and associates it to the
  * given instance.
  */
-const create = (transaction, instance, modelToAssociateWith,
-                association, associatedEntity, exclude, thingLocation) => {
-  const associatedEntityId = associatedEntity[iotId];
-  const attributes = Object.keys(associatedEntity);
+const create = (
+  transaction,
+  instance,
+  modelToAssociateWith,
+  association,
+  associatedEntity,
+  exclude,
+  thingLocation
+) => {
+  const associatedEntityId = associatedEntity[iotId]
+  const attributes = Object.keys(associatedEntity)
 
   if (attributes.length === 1 && associatedEntityId) {
     // According to section 10.2.1.1, if the only parameter of a linked entity
     // in the body is '@iot.id', we need to associate that entity to the
     // recently created instance.
-    return applyAssociation(transaction, instance,
-                            modelToAssociateWith,
-                            association,
-                            associatedEntityId,
-                            undefined,
-                            exclude);
+    return applyAssociation(
+      transaction,
+      instance,
+      modelToAssociateWith,
+      association,
+      associatedEntityId,
+      undefined,
+      exclude
+    )
   }
 
   // According to section 10.2.1.2, if any parameter other than '@iot.id' is
   // sent in a linked entity (even if it also includes @iot.id), we need to
   // create a new instance of the associated entity.
-  Reflect.deleteProperty(associatedEntity, 'id');
-  return instance[association.accessors.create](
-    associatedEntity, { transaction }
-  ).then(function onAssociationCreated() {
+  Reflect.deleteProperty(associatedEntity, 'id')
+  return instance[association.accessors.create](associatedEntity, {
+    transaction,
+  }).then(function onAssociationCreated() {
     // The Promise here resolves with `instance` which is not the associated
     // instance that we just created and that we need to continue looking
     // for deeper associations.
-    const associatedInstance = this;
+    const associatedInstance = this
     if (!associatedInstance) {
       return Promise.reject({
         name: BAD_REQUEST,
         errno: ERRNO_INVALID_ASSOCIATION,
-        errors: 'Could not create entity with body ' + associatedEntity
-      });
+        errors: 'Could not create entity with body ' + associatedEntity,
+      })
     }
     // There may be other entities to be associated inside the
     // recently created entity. This is what we call "deep insert".
@@ -162,30 +184,35 @@ const create = (transaction, instance, modelToAssociateWith,
     // association between modelA and modelB needs to be reflected in the
     // inline entity, in order to avoid mandatory association issues.
     try {
-      const modelA = instance.$modelOptions.name.plural;
-      const associationsOfModelB = association.target.associations;
+      const modelA = instance.$modelOptions.name.plural
+      const associationsOfModelB = association.target.associations
       Object.keys(associationsOfModelB).forEach(associationName => {
         if (getModelName(associationName) === modelA) {
           if (associatedEntity[associationName]) {
             throw Object.create({
               name: BAD_REQUEST,
               errno: ERRNO_BAD_REQUEST,
-              errors: 'Could not create entity with body ' + associatedEntity
-            });
+              errors: 'Could not create entity with body ' + associatedEntity,
+            })
           }
           associatedEntity[associationName] = { '@iot.id': instance.id }
         }
-      });
-    } catch(error) {
-      return Promise.reject(error);
+      })
+    } catch (error) {
+      return Promise.reject(error)
     }
 
     // In this case, after creating the instance of ModelB, we need
     // to process the body of ModelB to see if there are related entites
     // in it, like modelC.
-    return maybeCreate(transaction, associatedInstance,
-                       { body: associatedEntity }, exclude, thingLocation);
-  });
+    return maybeCreate(
+      transaction,
+      associatedInstance,
+      { body: associatedEntity },
+      exclude,
+      thingLocation
+    )
+  })
 }
 
 /*
@@ -224,16 +251,16 @@ const create = (transaction, instance, modelToAssociateWith,
  */
 const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
   return db().then(models => {
-    const modelName = instance.$modelOptions.name.plural;
+    const modelName = instance.$modelOptions.name.plural
     // relations holds the list of all possible relations for the recently
     // created entity (instance).
-    const relations = models[modelName].associations;
+    const relations = models[modelName].associations
     if (Object.keys(relations).length <= 0) {
       // Nothing to link
-      return Promise.resolve(instance);
+      return Promise.resolve(instance)
     }
 
-    let promises = [];
+    let promises = []
 
     // Create associations defined in the url.
     //
@@ -242,20 +269,20 @@ const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
     // with URL Things(1)/Locations, lastResource contains model 'Things'
     // and id 1. In this case we need to associate the recently created
     // Locations (instance variable) to the Thing with id 1.
-    const lastResource = req.lastResource;
+    const lastResource = req.lastResource
     if (lastResource) {
       if (!lastResource.model || !lastResource.id) {
         return Promise.reject({
           name: INTERNAL_ERROR,
-          message: 'Malformed lastResource'
-        });
+          message: 'Malformed lastResource',
+        })
       }
 
-      const associationName = relations[lastResource.associationName] ?
-                              lastResource.associationName :
-                              entities[lastResource.associationName];
+      const associationName = relations[lastResource.associationName]
+        ? lastResource.associationName
+        : entities[lastResource.associationName]
 
-      req.body[associationName] = { '@iot.id': lastResource.id };
+      req.body[associationName] = { '@iot.id': lastResource.id }
     }
 
     // Create associations defined in the request body.
@@ -284,8 +311,8 @@ const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
     // FeaturesOfInterest with id 2, if they really exist.
     //
     Object.keys(relations).forEach(associationName => {
-      const association = relations[associationName];
-      let body = req.body[associationName];
+      const association = relations[associationName]
+      let body = req.body[associationName]
 
       // In the case of creating an Observation whose FeatureOfInterest is the
       // Thing’s Location (that means the Thing entity has a related Location
@@ -294,23 +321,29 @@ const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
       // automatically create a FeatureOfInterest entity from the Location of
       // the Thing and then link to the Observation.
       if (associationName === featureOfInterest) {
-        body = body || featureOfInterestFromLocation(thingLocation);
+        body = body || featureOfInterestFromLocation(thingLocation)
         if (!body && req.body.Datastream) {
-          promises.push(getLocationFromDatastream(req.body.Datastream)
-          .then(loc => {
-            if (!loc) {
-              throw Object.create({
-                name: BAD_REQUEST,
-                errno: ERRNO_MANDATORY_ASSOCIATION_MISSING,
-                errors: 'Missing mandatory association: ' + associationName
-              });
-            }
-            return create(transaction, instance, models[featuresOfInterest],
-                          association, featureOfInterestFromLocation(loc),
-                          exclude);
-          }));
+          promises.push(
+            getLocationFromDatastream(req.body.Datastream).then(loc => {
+              if (!loc) {
+                throw Object.create({
+                  name: BAD_REQUEST,
+                  errno: ERRNO_MANDATORY_ASSOCIATION_MISSING,
+                  errors: 'Missing mandatory association: ' + associationName,
+                })
+              }
+              return create(
+                transaction,
+                instance,
+                models[featuresOfInterest],
+                association,
+                featureOfInterestFromLocation(loc),
+                exclude
+              )
+            })
+          )
 
-          return;
+          return
         }
       }
 
@@ -321,26 +354,25 @@ const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
           throw Object.create({
             name: BAD_REQUEST,
             errno: ERRNO_MANDATORY_ASSOCIATION_MISSING,
-            errors: 'Missing mandatory association: ' + associationName
-          });
+            errors: 'Missing mandatory association: ' + associationName,
+          })
         }
-        return;
+        return
       }
 
-      const isList = Array.isArray(body);
+      const isList = Array.isArray(body)
 
       if (isList && !association.isMultiAssociation) {
         throw Object.create({
           name: BAD_REQUEST,
           errno: ERRNO_INVALID_ASSOCIATION,
-          errors: 'Cannot use arrays for this association type'
-        });
+          errors: 'Cannot use arrays for this association type',
+        })
       }
 
-      const associatedEntities = isList ? body : [body];
-      const pluralName = association.options.name.plural;
-      const modelToAssociateWith = models[associationName] ||
-                                   models[pluralName];
+      const associatedEntities = isList ? body : [body]
+      const pluralName = association.options.name.plural
+      const modelToAssociateWith = models[associationName] || models[pluralName]
 
       // For the cases where we are creating an Observation with a missing
       // FeatureOfInterest, we need to check if there is a Location associated
@@ -349,151 +381,166 @@ const maybeCreate = (transaction, instance, req, exclude, thingLocation) => {
       // request object, for following calls to maybeCreate while traversing
       // the Datastream body looking for Datastream associations.
       associatedEntities.forEach(associatedEntity => {
-        const getLocationAndCreate =
-          getLocation(pluralName, modelName, req, associatedEntity)
-          .then(_thingLocation => {
-              const currentThingLocation = thingLocation || _thingLocation;
-              return create(transaction, instance, modelToAssociateWith,
-                            association, associatedEntity, exclude,
-                            currentThingLocation);
-          });
+        const getLocationAndCreate = getLocation(
+          pluralName,
+          modelName,
+          req,
+          associatedEntity
+        ).then(_thingLocation => {
+          const currentThingLocation = thingLocation || _thingLocation
+          return create(
+            transaction,
+            instance,
+            modelToAssociateWith,
+            association,
+            associatedEntity,
+            exclude,
+            currentThingLocation
+          )
+        })
 
-        promises.push(getLocationAndCreate);
-      });
-    });
+        promises.push(getLocationAndCreate)
+      })
+    })
 
-    return Promise.all(promises).then(() => instance);
-  });
+    return Promise.all(promises).then(() => instance)
+  })
 }
 
 const sameLocation = (loc1, loc2) => {
   if (!loc1 || !loc2) {
-    return false;
+    return false
   }
-  return JSON.stringify(loc1) === JSON.stringify(loc2);
+  return JSON.stringify(loc1) === JSON.stringify(loc2)
 }
 
-const getLocationFromDatastream = (datastreamEntity) => {
+const getLocationFromDatastream = datastreamEntity => {
   return db().then(models => {
     const includeDatastreamsAndLocations = [
-      models[locations], {
+      models[locations],
+      {
         model: models[datastreams],
         include: {
           model: models[observations],
-          include: [models[featuresOfInterest]]
-        }
-      }
-    ];
+          include: [models[featuresOfInterest]],
+        },
+      },
+    ]
     if (datastreamEntity[iotId]) {
       return findLocation(datastreams, datastreamEntity[iotId], {
         model: models[things],
-        include: includeDatastreamsAndLocations
-      });
+        include: includeDatastreamsAndLocations,
+      })
     }
 
     if (datastreamEntity.Thing) {
       if (datastreamEntity.Thing[iotId]) {
-        return findLocation(things, datastreamEntity.Thing[iotId],
-                            includeDatastreamsAndLocations);
+        return findLocation(
+          things,
+          datastreamEntity.Thing[iotId],
+          includeDatastreamsAndLocations
+        )
       }
 
       if (datastreamEntity.Thing.Locations) {
         if (datastreamEntity.Thing.Locations[0][iotId]) {
-          const locationId = datastreamEntity.Thing.Locations[0][iotId];
-          return findLocation(locations, locationId);
+          const locationId = datastreamEntity.Thing.Locations[0][iotId]
+          return findLocation(locations, locationId)
         }
 
-        return Promise.resolve(datastreamEntity.Thing.Locations[0]);
+        return Promise.resolve(datastreamEntity.Thing.Locations[0])
       }
     }
 
-    return Promise.resolve(null);
-  });
+    return Promise.resolve(null)
+  })
 }
-
 
 const findLocation = (modelName, id, include = []) => {
   return db().then(models => {
-    return models[modelName].findOne({
+    return models[modelName]
+      .findOne({
         where: { id: id },
-        include: include
-      }).then(instance => {
-        let _currentThing, loc;
+        include: include,
+      })
+      .then(instance => {
+        let _currentThing, loc
         try {
           switch (modelName) {
             case datastreams:
-              _currentThing = instance.Thing;
-              loc = _currentThing.Locations[0];
-              break;
+              _currentThing = instance.Thing
+              loc = _currentThing.Locations[0]
+              break
             case things:
-              _currentThing = instance;
-              loc = instance.Locations[0];
-              break;
+              _currentThing = instance
+              loc = instance.Locations[0]
+              break
             case locations:
-              loc = instance;
-              break;
+              loc = instance
+              break
             default:
-              break;
+              break
           }
-        } catch(e) {
-          loc = null;
+        } catch (e) {
+          loc = null
         }
 
         if (!_currentThing) {
-          return loc;
+          return loc
         }
 
         // We need to check if for any of the Datastreams of that Thing,
         // already exists an Observation which FeatureOfInterest matches
         // the last location of the Thing.
-        const thingDatastreams = _currentThing.Datastreams || [];
+        const thingDatastreams = _currentThing.Datastreams || []
         for (let i = 0; i < thingDatastreams.length; i++) {
-          const currentDatastream = thingDatastreams[i];
+          const currentDatastream = thingDatastreams[i]
           for (let j = 0; j < currentDatastream.Observations.length; j++) {
-            const currentObservation = currentDatastream.Observations[j];
-            const foi = currentObservation.FeatureOfInterest;
+            const currentObservation = currentDatastream.Observations[j]
+            const foi = currentObservation.FeatureOfInterest
             if (sameLocation(foi && foi.feature, loc && loc.location)) {
-              return foi;
+              return foi
             }
           }
         }
 
-        return loc;
-      });
-  });
+        return loc
+      })
+  })
 }
 
 const getLocation = (pluralName, modelName, req, associatedEntity) => {
-  let _thingLocation;
+  let _thingLocation
 
   // The entity we are creating is a Datastream, and so, the location can be in
   // its body
   if (modelName === datastreams) {
-    return getLocationFromDatastream(req.body);
+    return getLocationFromDatastream(req.body)
   }
 
   // We are associating a Datastream to any other entity
   if (pluralName === datastreams) {
     switch (modelName) {
       case things:
-        _thingLocation = Promise.resolve(req.body.Locations ?
-            req.body.Locations[0] : null);
-        break;
+        _thingLocation = Promise.resolve(
+          req.body.Locations ? req.body.Locations[0] : null
+        )
+        break
       case sensors:
       case observedProperties:
-        _thingLocation = getLocationFromDatastream(associatedEntity);
-        break;
+        _thingLocation = getLocationFromDatastream(associatedEntity)
+        break
       default:
-        _thingLocation = Promise.resolve(null);
-        break;
+        _thingLocation = Promise.resolve(null)
+        break
     }
-    return _thingLocation;
+    return _thingLocation
   }
 
-  return Promise.resolve(null);
+  return Promise.resolve(null)
 }
 
 export default {
   applyAssociation,
-  maybeCreate
-};
+  maybeCreate,
+}

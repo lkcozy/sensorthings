@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
-import { encodingTypes } from '../constants';
+import { encodingTypes } from '../constants'
 
 /**
  * 8.2.1 Sensor Entity
@@ -37,53 +37,63 @@ import { encodingTypes } from '../constants';
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Sensor = sequelize.define('Sensors', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const Sensor = sequelize.define(
+    'Sensors',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      description: { type: DataTypes.STRING(500), allowNull: false },
+      encodingType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: [
+            [
+              encodingTypes.SENSOR_ML,
+              encodingTypes.PDF,
+              // The spec at
+              // http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#table_15
+              // does not include 'description' as a valid encoding type,
+              // but SensorUp and Gost recognized this one a valid encoding type.
+              encodingTypes.TYPE_DESCRIPTION,
+            ],
+          ],
+        },
+      },
+      metadata: { type: DataTypes.STRING(255), allowNull: false },
     },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-    encodingType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [[
-          encodingTypes.SENSOR_ML,
-          encodingTypes.PDF,
-          // The spec at
-          // http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#table_15
-          // does not include 'description' as a valid encoding type,
-          // but SensorUp and Gost recognized this one a valid encoding type.
-          encodingTypes.TYPE_DESCRIPTION
-        ]]
-      }
-    },
-    metadata: { type: DataTypes.STRING(255), allowNull: false }
-  }, {
-    classMethods: {
-      associate: db => {
-        Sensor.hasMany(db.Datastreams);
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+    {
+      classMethods: {
+        associate: db => {
+          Sensor.hasMany(db.Datastreams)
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return Sensor;
+  return Sensor
 }

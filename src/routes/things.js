@@ -1,8 +1,5 @@
-import resource from './resource';
-import {
-  excludedFields,
-  things
-} from '../constants';
+import resource from './resource'
+import { excludedFields, things } from '../constants'
 
 /**
  * Implementation of 8.2.1 "Thing"
@@ -50,9 +47,9 @@ import {
  * }
  **/
 
-const endpoint = things;
-const exclude  = excludedFields[things];
+const endpoint = things
+const exclude = excludedFields[things]
 
 module.exports = function thingsRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

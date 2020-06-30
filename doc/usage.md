@@ -1,12 +1,6 @@
 # SensorThings API usage
 
-This repository contains the implementation of the SensorThings API as an 
-[npm](https://www.npmjs.com/) module.
-This npm module exports a [Express](http://expressjs.com/) router implementing 
-the SensorThings API as specified by the 
-[OGC](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html). 
-At the time of writing this documentation, the latest revision of the API spec 
-document was 15-078r6 (2016-07-26).
+This repository contains the implementation of the SensorThings API as an [npm](https://www.npmjs.com/) module. This npm module exports a [Express](http://expressjs.com/) router implementing the SensorThings API as specified by the [OGC](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html). At the time of writing this documentation, the latest revision of the API spec document was 15-078r6 (2016-07-26).
 
 This code can be installed as an npm module via
 
@@ -24,15 +18,14 @@ npm run build
 
 In the latter case, the generated build will be located in the `dist` folder.
 
-Once you have installed or built the SensorThings API you can use it along
-with Express in this way
+Once you have installed or built the SensorThings API you can use it along with Express in this way
 
 ```javascript
-const express      = require('express');
-const SensorThings = require('../dist/sensorthings'); // or require('sensorthings')
-                                                      // if you installed it via npm
+const express = require('express')
+const SensorThings = require('../dist/sensorthings') // or require('sensorthings')
+// if you installed it via npm
 
-var app = express();
+var app = express()
 
 const config = {
   db: {
@@ -40,22 +33,21 @@ const config = {
     port: 5432,
     name: 'sensorweb',
     user: 'postgres',
-    pass: '12345678'
-  }
-};
+    pass: '12345678',
+  },
+}
 
-app.use('/', SensorThings(config));
+app.use('/', SensorThings(config))
 
-app.listen(8080, () => console.log('Running on localhost:8080'));
+app.listen(8080, () => console.log('Running on localhost:8080'))
 ```
 
-There is an optional `version` configuration parameter that let's you define the 
-version number that should appear within the endpoint URLS. 
-It defaults to `v1.0` and the default endpoint URLs are of the form:
+There is an optional `version` configuration parameter that let's you define the version number that should appear within the endpoint URLS. It defaults to `v1.0` and the default endpoint URLs are of the form:
 
     https://<host-url>/v1.0/<api-endpoint>
 
 Additionally, there is an optional `hooks` configuration parameter that let's you define database hooks. This is an example of a database hook that adds a property to a `Things` instance that is being created:
+
 ```
 const config = {
   db: {
@@ -71,32 +63,32 @@ const config = {
   }
 };
 ```
+
 For more details about the API you can check this [document](https://github.com/mozilla-sensorweb/sensorthings/blob/master/doc/API.md).
 
 ## Example requests
 
-The following requests are an example of the normal usage that a new sensor
-station can make of this API to register itself and start sending its
-observations.
+The following requests are an example of the normal usage that a new sensor station can make of this API to register itself and start sending its observations.
 
 The usual steps are:
 
-  1. Create a [Thing](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#25).
-  2. Create a [Location](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#26) associated to the Thing.
-  3. Create a [ObservedProperty](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#30).
-  4. Create a [Sensor](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#29).
-  5. Create a [Datastream](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#28) associated to the Thing, the ObservedProperty and the Sensor.
-  6. Create a [FeatureOfInterest](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#32)
-  7. Create [Observations](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#31) associated to the Datastream and FeatureOfInterest.
+1. Create a [Thing](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#25).
+2. Create a [Location](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#26) associated to the Thing.
+3. Create a [ObservedProperty](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#30).
+4. Create a [Sensor](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#29).
+5. Create a [Datastream](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#28) associated to the Thing, the ObservedProperty and the Sensor.
+6. Create a [FeatureOfInterest](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#32)
+7. Create [Observations](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#31) associated to the Datastream and FeatureOfInterest.
 
 If you want to try this yourself make sure that you:
 
-* Replace http://localhost:8080 with the url of your own test server
-* When something is created with a HTTP Post request, an @iot.id is returned. 
-Use this @iot.id in subsequent request.
+- Replace http://localhost:8080 with the url of your own test server
+- When something is created with a HTTP Post request, an @iot.id is returned. Use this @iot.id in subsequent request.
 
 ### 1. Create a Thing.
+
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "description": "A SensorWeb thing",
@@ -107,7 +99,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }' "http://localhost:8080/v1.0/Things"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -123,12 +117,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }
 ```
+
 ### 2. Create a Location associated to the Thing.
-Note that we are using the `@iot.id` value returned as response to the previous 
-request in the URL to let the API know that we want to associate this Location 
-to the previously created Thing.
+
+Note that we are using the `@iot.id` value returned as response to the previous request in the URL to let the API know that we want to associate this Location to the previously created Thing.
 
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
     "description": "My backyard",
@@ -140,7 +135,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
     }
 }' "http://localhost:8080/v1.0/Things(1)/Locations"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -159,8 +156,11 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }
 ```
+
 ### 3. Create a ObservedProperty.
+
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "PM 2.5",
@@ -168,7 +168,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "definition": "https://airnow.gov/index.cfm?action=aqibasics.particle"
 }' "http://localhost:8080/v1.0/ObservedProperties"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -179,8 +181,11 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "definition": "https://airnow.gov/index.cfm?action=aqibasics.particle"
 }
 ```
+
 ### 4. Create a Sensor.
+
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
 	"description": "PM 2.5 sensor",
@@ -189,7 +194,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
     "metadata": "http://particle-sensor.com/"
 }' "http://localhost:8080/v1.0/Sensors"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -201,10 +208,12 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "metadata": "http://particle-sensor.com/"
 }
 ```
+
 ### 5. Create a Datastream associated to the Thing, the ObservedProperty and the Sensor.
+
 #### Request
-Note that we used the `@iot.id` values from the recently created Thing, ObservedProperty 
-and Sensor to associate this Datastream to those entities.
+
+Note that we used the `@iot.id` values from the recently created Thing, ObservedProperty and Sensor to associate this Datastream to those entities.
 
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
@@ -218,10 +227,12 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "name": "air_quality_readings",
   "Thing": {"@iot.id": 1},
   "ObservedProperty": {"@iot.id": 1},
-  "Sensor": {"@iot.id": 1}	
+  "Sensor": {"@iot.id": 1}
 }' "http://localhost:8080/v1.0/Datastreams"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -240,8 +251,11 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "observedArea": null
 }
 ```
+
 ### 6. Create a FeatureOfInterest.
+
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "Weather Station YYC.",
@@ -256,7 +270,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }' "http://localhost:8080/v1.0/FeaturesOfInterest"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": "2",
@@ -274,8 +290,11 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }
 ```
+
 ### 7. Create Observations associated to the Datastream and FeatureOfInterest.
+
 #### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "phenomenonTime": "2016-11-18T11:04:15.790Z",
@@ -285,7 +304,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "FeatureOfInterest":{"@iot.id": 2}
 }' "http://localhost:8080/v1.0/Observations"
 ```
+
 #### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -301,11 +322,10 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 
 ## Deep Insert.
 
-Alternatively, instead of creating five different requests, it is possible to 
-do all the work to create a Datastream associated to a Thing, a ObservedProperty 
-and a Sensor with all its details on a single request. 
+Alternatively, instead of creating five different requests, it is possible to do all the work to create a Datastream associated to a Thing, a ObservedProperty and a Sensor with all its details on a single request.
 
 ### Request to deep insert a Datastream
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "unitOfMeasurement": {
@@ -348,6 +368,7 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ### Response
+
 ```ssh
 {
   "@iot.id": "1",
@@ -368,10 +389,7 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 }
 ```
 
-Subsequent requests to add new Observations will look exactly like before. You 
-just need to specify the id of the Datastream where you want to push these observations. 
-In this case, if you want to push an Observation to the Datastream you just created 
-via deep insert, you can send this request:
+Subsequent requests to add new Observations will look exactly like before. You just need to specify the id of the Datastream where you want to push these observations. In this case, if you want to push an Observation to the Datastream you just created via deep insert, you can send this request:
 
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
@@ -411,32 +429,28 @@ Which should reply with something like:
 
 ## Querying the API
 
-Until we have the query language ready, querying the API to get data is a bit 
-painful. 
+Until we have the query language ready, querying the API to get data is a bit painful.
 
-For example, let's say that you want to implement something similar to 
-[http://calgary-air.sensorup.com/](http://calgary-air.sensorup.com/). 
-Which:
+For example, let's say that you want to implement something similar to [http://calgary-air.sensorup.com/](http://calgary-air.sensorup.com/). Which:
 
-* Shows on a map a list of registered Things that have an 
-active Datastream.
-* Changes how  each of these Datastreams look like on the map based on its 
-associated Observations
-* Shows details about each Observation result if the user clicks on the map. 
+- Shows on a map a list of registered Things that have an active Datastream.
+- Changes how each of these Datastreams look like on the map based on its associated Observations
+- Shows details about each Observation result if the user clicks on the map.
 
-In order to get enough data from the API to do that, you need to do the 
-following requests:
+In order to get enough data from the API to do that, you need to do the following requests:
 
 ### Placing dots on a map Get.
-First of all, you need to get the list of registered Datastreams. Without, the 
-query language, you'll get the entire list (sorry!).
+
+First of all, you need to get the list of registered Datastreams. Without, the query language, you'll get the entire list (sorry!).
 
 #### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams"
 ```
 
 #### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -462,22 +476,21 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams
 }
 ```
 
-In this case, the above response only shows one Datastream. For each Datastream 
-we care about two associations:
+In this case, the above response only shows one Datastream. For each Datastream we care about two associations:
 
-* its Location, to be able to place a dot on the map.
-* its Observations, to be able to modify how this dot looks on the map and to 
-show the list of results if the user clicks on it.
+- its Location, to be able to place a dot on the map.
+- its Observations, to be able to modify how this dot looks on the map and to show the list of results if the user clicks on it.
 
-In order to get its Locations we first need to get the Datastream associated 
-Thing by following the `Thing@iot.navigationLink` navigation link.
+In order to get its Locations we first need to get the Datastream associated Thing by following the `Thing@iot.navigationLink` navigation link.
 
 #### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams(1)/Thing"
 ```
 
 #### Response
+
 ```ssh
 {
   "@iot.id": "1",
@@ -503,6 +516,7 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things(1)/L
 ```
 
 #### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -527,19 +541,18 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things(1)/L
 }
 ```
 
-With this information we should be able to place a dot on a map at coordinates 
-`[-117.123, 54.123]`. 
+With this information we should be able to place a dot on a map at coordinates `[-117.123, 54.123]`.
 
-Now we need to know how this dot looks like. So we query the list of Observations 
-associated to the Datastream by following the `Observations@iot.navigationLink` 
-navigation link that we got in the first request.
+Now we need to know how this dot looks like. So we query the list of Observations associated to the Datastream by following the `Observations@iot.navigationLink` navigation link that we got in the first request.
 
 #### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams(1)/Observations"
 ```
 
 #### Response
+
 ```ssh
 {
   "@iot.count": 2,
@@ -568,7 +581,4 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams
 }
 ```
 
-These give us two observations. One with result `12.4` and the other one with 
-result `14.4`. With these two values, you can decide how you want your dot to 
-look like on the map. And you can list the observations registered for the 
-dot.
+These give us two observations. One with result `12.4` and the other one with result `14.4`. With these two values, you can decide how you want your dot to look like on the map. And you can list the observations registered for the dot.

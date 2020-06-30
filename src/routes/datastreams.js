@@ -1,8 +1,5 @@
-import resource from './resource';
-import {
-  datastreams,
-  excludedFields
-} from '../constants';
+import resource from './resource'
+import { datastreams, excludedFields } from '../constants'
 
 /**
  * Implementation of 8.2.4 "Datastreams"
@@ -59,9 +56,9 @@ import {
  * }
  **/
 
-const endpoint = datastreams;
-const exclude = excludedFields[datastreams];
+const endpoint = datastreams
+const exclude = excludedFields[datastreams]
 
 module.exports = function datastreamsRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

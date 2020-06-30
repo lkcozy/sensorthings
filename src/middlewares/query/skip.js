@@ -1,9 +1,9 @@
-import { route } from '../../utils';
+import { route } from '../../utils'
 
-const pattern = route.noCapture('\\d+');
+const pattern = route.noCapture('\\d+')
 
 module.exports = {
-  validate: (value) => {
-    return new RegExp('^' + pattern + '$').test(value);
-  }
-};
+  validate: value => {
+    return new RegExp('^' + pattern + '$').test(value)
+  },
+}

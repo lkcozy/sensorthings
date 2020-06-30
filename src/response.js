@@ -15,93 +15,98 @@ import {
   iotSelfLink,
   modelNames,
   navigationLink,
-  protocolHeader
-} from './constants';
+  protocolHeader,
+} from './constants'
 
-const FIELDS_TO_FILTER = [
-  'id'
-];
+const FIELDS_TO_FILTER = ['id']
 
 const formatItem = (item, associations, prepath, options) => {
-  const { exclude, expand, ref, select } = options;
+  const { exclude, expand, ref, select } = options
 
   const selected = field => {
-    field = field.replace('@iot.', '');
-    return !select || (select.indexOf(field) !== -1);
-  };
+    field = field.replace('@iot.', '')
+    return !select || select.indexOf(field) !== -1
+  }
 
   const expanded = field => {
-    return expand && expand.indexOf(field) !== -1;
-  };
+    return expand && expand.indexOf(field) !== -1
+  }
 
   // We need to get the data directly from item (and not item.dataValues) so
   // getters and setters of the models are called.
-  const resourceName = item.$modelOptions.name.plural;
+  const resourceName = item.$modelOptions.name.plural
 
-  let formatedItem = {};
+  let formatedItem = {}
   if (selected(iotSelfLink)) {
-    formatedItem[iotSelfLink] = prepath + resourceName + '(' + item.id + ')';
+    formatedItem[iotSelfLink] = prepath + resourceName + '(' + item.id + ')'
   }
 
   if (ref) {
     // 9.2.7 Usage 7: address to an associationLink.
-    return formatedItem;
+    return formatedItem
   }
 
   if (selected(iotId)) {
-    formatedItem[iotId] = item.id;
+    formatedItem[iotId] = item.id
   }
 
-  associations && associations.forEach(association => {
-    if (expanded(association)) {
-      const toExclude = excludedFields[modelNames[association]];
-      if (Array.isArray(item[association])) {
-        formatedItem[association] = [];
-        item[association].forEach(toExpand => {
-          formatedItem[association].push(
-            formatItem(toExpand, null, prepath, { exclude: toExclude })
-          );
-        });
-      } else {
-        formatedItem[association] = formatItem(
-          item[association], null, prepath, {
-            exclude: toExclude
-          }
-        );
+  associations &&
+    associations.forEach(association => {
+      if (expanded(association)) {
+        const toExclude = excludedFields[modelNames[association]]
+        if (Array.isArray(item[association])) {
+          formatedItem[association] = []
+          item[association].forEach(toExpand => {
+            formatedItem[association].push(
+              formatItem(toExpand, null, prepath, { exclude: toExclude })
+            )
+          })
+        } else {
+          formatedItem[association] = formatItem(
+            item[association],
+            null,
+            prepath,
+            {
+              exclude: toExclude,
+            }
+          )
+        }
+        return
       }
-      return;
-    }
-    const link = association + navigationLink;
-    if (selected(association)) {
-      formatedItem[link] =
-        prepath + resourceName + '(' + item.id + ')/' + association;
-    }
-  });
+      const link = association + navigationLink
+      if (selected(association)) {
+        formatedItem[link] =
+          prepath + resourceName + '(' + item.id + ')/' + association
+      }
+    })
 
   Object.keys(item.dataValues).forEach(key => {
-    if (FIELDS_TO_FILTER.concat(exclude).indexOf(key) === -1 &&
-        selected(key) && !formatedItem[key]) {
-      formatedItem[key] = item[key];
+    if (
+      FIELDS_TO_FILTER.concat(exclude).indexOf(key) === -1 &&
+      selected(key) &&
+      !formatedItem[key]
+    ) {
+      formatedItem[key] = item[key]
     }
-  });
+  })
 
-  return formatedItem;
+  return formatedItem
 }
 
 const getPrepath = (req, version) => {
-  const protocol = req.headers[protocolHeader] || req.protocol;
-  const host = req.headers[hostHeader] || req.headers.host;
-  const prepath = protocol + '://' + host + '/' + version + '/';
-  return prepath;
+  const protocol = req.headers[protocolHeader] || req.protocol
+  const host = req.headers[hostHeader] || req.headers.host
+  const prepath = protocol + '://' + host + '/' + version + '/'
+  return prepath
 }
 
 const generate = (resource, associations, req, version, options) => {
-  const prepath = getPrepath(req, version);
+  const prepath = getPrepath(req, version)
 
   if (resource && Array.isArray(resource)) {
-    const { count, skip, top, totalCount } = options;
+    const { count, skip, top, totalCount } = options
 
-    let response = {};
+    let response = {}
 
     // The $count system query option with a value of true specifies that the
     // total count of items within a collection matching the request SHALL be
@@ -109,11 +114,11 @@ const generate = (resource, associations, req, version, options) => {
     // false (or not specified) hints that the service SHALL not return a
     // count.
     if (count !== false) {
-      response[iotCount] = totalCount;
+      response[iotCount] = totalCount
     }
 
     if (resource.length) {
-      const resourceName = resource[0].$modelOptions.name.plural;
+      const resourceName = resource[0].$modelOptions.name.plural
 
       // The nextLink annotation indicates that a response is only a subset of
       // the requested collection of entities or collection of entity
@@ -122,29 +127,26 @@ const generate = (resource, associations, req, version, options) => {
       //
       // We add the next link only if there are items left in the pagination
       // stack.
-      const nextSkip = skip ? skip + top : top;
-      if (top && (nextSkip < totalCount)) {
-        response[iotNextLink] = prepath + resourceName +
-                                '?$top=' + top +
-                                '&$skip=' + nextSkip;
+      const nextSkip = skip ? skip + top : top
+      if (top && nextSkip < totalCount) {
+        response[iotNextLink] =
+          prepath + resourceName + '?$top=' + top + '&$skip=' + nextSkip
       }
     }
 
-    response.value = [];
-    resource = Array.isArray(resource) ? resource : [resource];
+    response.value = []
+    resource = Array.isArray(resource) ? resource : [resource]
     resource.forEach(item => {
-      response.value.push(
-        formatItem(item, associations, prepath, options)
-      );
-    });
+      response.value.push(formatItem(item, associations, prepath, options))
+    })
 
-    return response;
+    return response
   }
 
-  return formatItem(resource, associations, prepath, options);
+  return formatItem(resource, associations, prepath, options)
 }
 
 module.exports = {
   generate,
-  getPrepath
-};
+  getPrepath,
+}

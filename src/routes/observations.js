@@ -1,8 +1,5 @@
-import resource from './resource';
-import {
-  excludedFields,
-  observations
-} from '../constants';
+import resource from './resource'
+import { excludedFields, observations } from '../constants'
 
 /**
  * Implementation of 8.2.7 "Observation"
@@ -47,9 +44,9 @@ import {
  * }
  **/
 
-const endpoint = observations;
-const exclude  = excludedFields[observations];
+const endpoint = observations
+const exclude = excludedFields[observations]
 
 module.exports = function observationsRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

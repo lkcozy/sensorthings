@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
 /**
  * 8.2.3 HistoricalLocation Entity
@@ -28,55 +28,63 @@
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const HistoricalLocation = sequelize.define('HistoricalLocations', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      get: function get () {
-        const time = this.getDataValue('time');
-        if (!time) {
-          return;
-        }
-        return new Date(time).toISOString();
+  const HistoricalLocation = sequelize.define(
+    'HistoricalLocations',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      set: function set (value) {
-        if (!value) {
-          return;
-        }
-        this.setDataValue('time', new Date(value).toISOString())
-      }
-    }
-  }, {
-    classMethods: {
-      associate: db => {
-        HistoricalLocation.belongsTo(db.Things);
-        HistoricalLocation.belongsToMany(db.Locations, {
-          through: 'HistoricalLocationsLocations'
-        });
-      }
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      time: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        get: function get() {
+          const time = this.getDataValue('time')
+          if (!time) {
+            return
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            return
+          }
+          this.setDataValue('time', new Date(value).toISOString())
+        },
+      },
     },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+    {
+      classMethods: {
+        associate: db => {
+          HistoricalLocation.belongsTo(db.Things)
+          HistoricalLocation.belongsToMany(db.Locations, {
+            through: 'HistoricalLocationsLocations',
+          })
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return HistoricalLocation;
+  return HistoricalLocation
 }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
 /**
  * 8.2.1 Thing Entity
@@ -47,77 +47,94 @@
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Thing = sequelize.define('Things', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const Thing = sequelize.define(
+    'Things',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      description: { type: DataTypes.STRING(500), allowNull: false },
+      properties: { type: DataTypes.JSONB },
     },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-    properties: { type: DataTypes.JSONB }
-  }, {
-    classMethods: {
-      associate: db => {
-        Thing.belongsToMany(db.Locations, { through: 'ThingLocations' });
-        Thing.hasMany(db.HistoricalLocations);
-        Thing.hasMany(db.Datastreams);
-        // When a Thing has a new Location, a new HistoricalLocation SHALL
-        // be created and added to the Thing automatically by the service.
-        // The current Location of the Thing SHALL only be added to
-        // HistoricalLocation automatically by the service, and SHALL not
-        // be created as HistoricalLocation directly by user.
-        Thing.associations.Locations.afterAssociation =
-          (transaction, instance, associationId) => {
-          const historicalLocations =
-            Thing.associations.HistoricalLocations;
-          return instance[historicalLocations.accessors.create]({
-            time: Date.now()
-          }, { transaction }).then(historicalLocation => {
-            const locations = db.HistoricalLocations.associations.Locations;
-            return historicalLocation[locations.accessors.add](
-              associationId, { transaction }
-            );
-          }).then(() => {
-            // If there is already a Location with the same encodingType,
-            // lets replace it.
-            return db.Locations.findAndCountAll({
-              include: [{
-                model: db.Things,
-                where: { id: instance.id }
-              }]
-            }).then(result => {
-              if (result.count > 0) {
-                return db.Locations.findById(associationId).then(loc => {
-                  result.rows.forEach(row => {
-                    if (row.encodingType === loc.encodingType) {
-                      instance.removeLocation(row);
-                    }
-                  });
-                });
-              }
-            });
-          });
-        };
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+    {
+      classMethods: {
+        associate: db => {
+          Thing.belongsToMany(db.Locations, { through: 'ThingLocations' })
+          Thing.hasMany(db.HistoricalLocations)
+          Thing.hasMany(db.Datastreams)
+          // When a Thing has a new Location, a new HistoricalLocation SHALL
+          // be created and added to the Thing automatically by the service.
+          // The current Location of the Thing SHALL only be added to
+          // HistoricalLocation automatically by the service, and SHALL not
+          // be created as HistoricalLocation directly by user.
+          Thing.associations.Locations.afterAssociation = (
+            transaction,
+            instance,
+            associationId
+          ) => {
+            const historicalLocations = Thing.associations.HistoricalLocations
+            return instance[historicalLocations.accessors.create](
+              {
+                time: Date.now(),
+              },
+              { transaction }
+            )
+              .then(historicalLocation => {
+                const locations = db.HistoricalLocations.associations.Locations
+                return historicalLocation[
+                  locations.accessors.add
+                ](associationId, { transaction })
+              })
+              .then(() => {
+                // If there is already a Location with the same encodingType,
+                // lets replace it.
+                return db.Locations.findAndCountAll({
+                  include: [
+                    {
+                      model: db.Things,
+                      where: { id: instance.id },
+                    },
+                  ],
+                }).then(result => {
+                  if (result.count > 0) {
+                    return db.Locations.findById(associationId).then(loc => {
+                      result.rows.forEach(row => {
+                        if (row.encodingType === loc.encodingType) {
+                          instance.removeLocation(row)
+                        }
+                      })
+                    })
+                  }
+                })
+              })
+          }
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return Thing;
+  return Thing
 }

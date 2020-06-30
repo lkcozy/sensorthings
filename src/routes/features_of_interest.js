@@ -1,8 +1,5 @@
-import resource from './resource';
-import {
-  excludedFields,
-  featuresOfInterest
-} from '../constants';
+import resource from './resource'
+import { excludedFields, featuresOfInterest } from '../constants'
 
 /**
  * Implementation of 8.2.8 "FeaturesOfInterest"
@@ -47,9 +44,9 @@ import {
  * }
  **/
 
-const endpoint = featuresOfInterest;
-const exclude = excludedFields[featuresOfInterest];
+const endpoint = featuresOfInterest
+const exclude = excludedFields[featuresOfInterest]
 
 module.exports = function featuresOfInterestRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

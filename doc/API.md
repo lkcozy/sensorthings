@@ -14,29 +14,21 @@ All requests will be to URLs of the form:
 
 Note that:
 
-* All API access must be over a properly-validated HTTPS connection.
-* The URL embeds a version identifier "v1.0"; future revisions of this API may
-introduce new version numbers.
+- All API access must be over a properly-validated HTTPS connection.
+- The URL embeds a version identifier "v1.0"; future revisions of this API may introduce new version numbers.
 
 ## Request Format
 
-All POST and PATCH requests must have a content-type of `application/json` with
-a utf8-encoded JSON body.
+All POST and PATCH requests must have a content-type of `application/json` with a utf8-encoded JSON body.
 
 ## Response Format
-All successful requests will produce a response with HTTP status code of "20X"
-and content-type of "application/json".  The structure of the response body
-will depend on the endpoint in question.
 
-Failures due to invalid behavior from the client will produce a response with
-HTTP status code in the "4XX" range and content-type of "application/json".  
-Failures due to an unexpected situation on the server side will produce a
-response with HTTP status code in the "5XX" range and content-type of
-"application/json".
+All successful requests will produce a response with HTTP status code of "20X" and content-type of "application/json". The structure of the response body will depend on the endpoint in question.
 
-To simplify error handling for the client, the type of error is indicated both
-by a particular HTTP status code, and by an application-specific error code in
-the JSON response body.  For example:
+Failures due to invalid behavior from the client will produce a response with HTTP status code in the "4XX" range and content-type of "application/json".  
+Failures due to an unexpected situation on the server side will produce a response with HTTP status code in the "5XX" range and content-type of "application/json".
+
+To simplify error handling for the client, the type of error is indicated both by a particular HTTP status code, and by an application-specific error code in the JSON response body. For example:
 
 ```js
 {
@@ -51,70 +43,75 @@ Responses for particular types of error may include additional parameters.
 
 The currently-defined error responses are:
 
-* status code 400, errno 400: Bad request.
-* status code 500, errno 500: Internal server error.
+- status code 400, errno 400: Bad request.
+- status code 500, errno 500: Internal server error.
 
 # API Endpoints
 
-* [GET /](#get)
-* Things
-  * [GET /Things](#get-things)
-  * [GET /Things(:id)](#get-thingsid)
-  * [POST /Things](#post-things)
-  * [PATCH /Things(:id)](#patch-thingsid)
-  * [DELETE /Things(:id)](#delete-thingsid)
-* Locations
-  * [GET /Locations](#get-locations)
-  * [GET /Locations(:id)](#get-locationsid)
-  * [POST /Locations](#post-locations)
-  * [PATCH /Locations(:id)](#patch-locationsid)
-  * [DELETE /Locations(:id)](#delete-locationsid)
-* HistoricalLocations
-  * [GET /HistoricalLocations](#get-historicallocations)
-  * [GET /HistoricalLocations(:id)](#get-historicallocationsid)
-  * [POST /HistoricalLocations](#post-historicallocations)
-  * [PATCH /HistoricalLocations(:id)](#patch-historicallocationsid)
-  * [DELETE /HistoricalLocations(:id)](#delete-historicallocationsid)
-* Datastreams
-  * [GET /Datastreams](#get-datastreams)
-  * [GET /Datastreams(:id)](#get-datastreamsid)
-  * [POST /Datastreams](#post-datastreams)
-  * [PATCH /Datastreams(:id)](#patch-datastreamsid)
-  * [DELETE /Datastreams(:id)](#delete-datastreamsid)
-* Sensors
-  * [GET /Sensors](#get-sensors)
-  * [GET /Sensors(:id)](#get-sensorsid)
-  * [POST /Sensors](#post-sensors)
-  * [PATCH /Sensors(:id)](#patch-sensorsid)
-  * [DELETE /Sensors(:id)](#delete-sensorsid)
-* ObservedProperties
-  * [GET /ObservedProperties](#get-observedproperties)
-  * [GET /ObservedProperties(:id)](#get-observedpropertiesid)
-  * [POST /ObservedProperties](#post-observedproperties)
-  * [PATCH /ObservedProperties(:id)](#patch-observedpropertiesid)
-  * [DELETE /ObservedProperties(:id)](#delete-observedpropertiesid)
-* Observations
-  * [GET /Observations](#get-observations)
-  * [GET /Observations(:id)](#get-observationsid)
-  * [POST /Observations](#post-observations)
-  * [PATCH /Observations(:id)](#patch-observationsid)
-  * [DELETE /Observations(:id)](#delete-observationsid)
-* FeaturesOfInterest
-  * [GET /FeaturesOfInterest](#get-featuresofinterest)
-  * [GET /FeaturesOfInterest(:id)](#get-featuresofinterestid)
-  * [POST /FeaturesOfInterest](#post-featuresofinterest)
-  * [PATCH /FeaturesOfInterest(:id)](#patch-featuresofinterestid)
-  * [DELETE /FeaturesOfInterest(:id)](#delete-featuresofinterestid)
+- [GET /](#get)
+- Things
+  - [GET /Things](#get-things)
+  - [GET /Things(:id)](#get-thingsid)
+  - [POST /Things](#post-things)
+  - [PATCH /Things(:id)](#patch-thingsid)
+  - [DELETE /Things(:id)](#delete-thingsid)
+- Locations
+  - [GET /Locations](#get-locations)
+  - [GET /Locations(:id)](#get-locationsid)
+  - [POST /Locations](#post-locations)
+  - [PATCH /Locations(:id)](#patch-locationsid)
+  - [DELETE /Locations(:id)](#delete-locationsid)
+- HistoricalLocations
+  - [GET /HistoricalLocations](#get-historicallocations)
+  - [GET /HistoricalLocations(:id)](#get-historicallocationsid)
+  - [POST /HistoricalLocations](#post-historicallocations)
+  - [PATCH /HistoricalLocations(:id)](#patch-historicallocationsid)
+  - [DELETE /HistoricalLocations(:id)](#delete-historicallocationsid)
+- Datastreams
+  - [GET /Datastreams](#get-datastreams)
+  - [GET /Datastreams(:id)](#get-datastreamsid)
+  - [POST /Datastreams](#post-datastreams)
+  - [PATCH /Datastreams(:id)](#patch-datastreamsid)
+  - [DELETE /Datastreams(:id)](#delete-datastreamsid)
+- Sensors
+  - [GET /Sensors](#get-sensors)
+  - [GET /Sensors(:id)](#get-sensorsid)
+  - [POST /Sensors](#post-sensors)
+  - [PATCH /Sensors(:id)](#patch-sensorsid)
+  - [DELETE /Sensors(:id)](#delete-sensorsid)
+- ObservedProperties
+  - [GET /ObservedProperties](#get-observedproperties)
+  - [GET /ObservedProperties(:id)](#get-observedpropertiesid)
+  - [POST /ObservedProperties](#post-observedproperties)
+  - [PATCH /ObservedProperties(:id)](#patch-observedpropertiesid)
+  - [DELETE /ObservedProperties(:id)](#delete-observedpropertiesid)
+- Observations
+  - [GET /Observations](#get-observations)
+  - [GET /Observations(:id)](#get-observationsid)
+  - [POST /Observations](#post-observations)
+  - [PATCH /Observations(:id)](#patch-observationsid)
+  - [DELETE /Observations(:id)](#delete-observationsid)
+- FeaturesOfInterest
 
-* Data Array Extension
-  * [POST /CreateObservations](#post-createobservations)
+  - [GET /FeaturesOfInterest](#get-featuresofinterest)
+  - [GET /FeaturesOfInterest(:id)](#get-featuresofinterestid)
+  - [POST /FeaturesOfInterest](#post-featuresofinterest)
+  - [PATCH /FeaturesOfInterest(:id)](#patch-featuresofinterestid)
+  - [DELETE /FeaturesOfInterest(:id)](#delete-featuresofinterestid)
+
+- Data Array Extension
+  - [POST /CreateObservations](#post-createobservations)
 
 ## GET /
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0"
 ```
+
 ### Response
+
 ```ssh
 {
   "value": [
@@ -155,11 +152,15 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0"
 ```
 
 ## GET /Things
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -182,14 +183,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things"
 ```
 
 ## GET /Things(:id)
-___Parameters___
-* id - The id of the Thing to retrieve.
+
+**_Parameters_**
+
+- id - The id of the Thing to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Things(1)",
@@ -207,7 +213,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things(1)"
 ```
 
 ## POST /Things
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "description": "A SensorWeb thing",
@@ -218,7 +226,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }' "http://localhost:8080/v1.0/Things"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Things(1)",
@@ -236,10 +246,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /Things(:id)
-___Parameters___
-* id - The id of the Thing to patch.
+
+**_Parameters_**
+
+- id - The id of the Thing to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "description": "A SensorWeb thing",
@@ -250,7 +263,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
   }
 }' "http://localhost:8080/v1.0/Things(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Things(1)",
@@ -267,27 +282,34 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 }
 ```
 
-
 ## DELETE /Things(:id)
-___Parameters___
-* id - The id of the Thing to delete.
+
+**_Parameters_**
+
+- id - The id of the Thing to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Things(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /Locations
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Locations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -313,14 +335,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Locations"
 ```
 
 ## GET /Locations(:id)
-___Parameters___
-* id - The id of the Location to retrieve.
+
+**_Parameters_**
+
+- id - The id of the Location to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Locations(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Locations(1)",
@@ -341,7 +368,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Locations(1
 ```
 
 ## POST /Locations
+
 ### Request
+
 ```ssh
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json"  -d '{
   "name": "My Location",
@@ -353,7 +382,9 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json"  
       }
 }' "http://localhost:8080/v1.0/Locations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Locations(1)",
@@ -374,10 +405,13 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json"  
 ```
 
 ## PATCH /Locations(:id)
-___Parameters___
-* id - The id of the Location to patch.
+
+**_Parameters_**
+
+- id - The id of the Location to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "My Location has changed",
@@ -389,7 +423,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
       }
 }' "http://localhost:8080/v1.0/Locations(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Locations(1)",
@@ -410,25 +446,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /Locations(:id)
-___Parameters___
-* id - The id of the Location to delete.
+
+**_Parameters_**
+
+- id - The id of the Location to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Locations(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /HistoricalLocations
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/HistoricalLocations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -445,14 +489,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/HistoricalL
 ```
 
 ## GET /HistoricalLocations(:id)
-___Parameters___
-* id - The id of the HistoricalLocation to retrieve.
+
+**_Parameters_**
+
+- id - The id of the HistoricalLocation to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/HistoricalLocations(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/HistoricalLocations(1)",
@@ -464,13 +513,17 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/HistoricalL
 ```
 
 ## POST /HistoricalLocations
+
 ### Request
+
 ```ssh
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{
      "time": "2014-12-31T11:59:59.00+08:00"
 }' "http://localhost:8080/v1.0/HistoricalLocations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/HistoricalLocations(1)",
@@ -482,16 +535,21 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -
 ```
 
 ## PATCH /HistoricalLocations(:id)
-___Parameters___
-* id - The id of the HistoricalLocation to patch.
+
+**_Parameters_**
+
+- id - The id of the HistoricalLocation to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "time":"2018-12-31T03:59:59.000Z"
 }' "http://localhost:8080/v1.0/HistoricalLocations(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/HistoricalLocations(1)",
@@ -503,25 +561,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /HistoricalLocations(:id)
-___Parameters___
-* id - The id of the HistoricalLocation to delete.
+
+**_Parameters_**
+
+- id - The id of the HistoricalLocation to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/HistoricalLocations(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /Datastreams
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -548,14 +614,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams
 ```
 
 ## GET /Datastreams(:id)
-___Parameters___
-* id - The id of the Datastream to retrieve.
+
+**_Parameters_**
+
+- id - The id of the Datastream to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Datastreams(5)",
@@ -577,7 +648,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams
 ```
 
 ## POST /Datastreams
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
 "unitOfMeasurement": {
@@ -593,7 +666,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "Sensor": {"@iot.id": 1}
 }' "http://localhost:8080/v1.0/Datastreams"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -614,10 +689,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /Datastreams(:id)
-___Parameters___
-* id - The id of the Datastream to patch.
+
+**_Parameters_**
+
+- id - The id of the Datastream to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
 "unitOfMeasurement": {
@@ -633,7 +711,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
   "Sensor": {"@iot.id": 1}
 }' "http://localhost:8080/v1.0/Datastreams"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.id": 1,
@@ -654,25 +734,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /Datastreams(:id)
-___Parameters___
-* id - The id of the Datastream to delete.
+
+**_Parameters_**
+
+- id - The id of the Datastream to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Datastreams(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /Sensors
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Sensors"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -691,14 +779,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Sensors"
 ```
 
 ## GET /Sensors(:id)
-___Parameters___
-* id - The id of the Sensor to retrieve.
+
+**_Parameters_**
+
+- id - The id of the Sensor to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Sensors(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Sensors(1)",
@@ -712,7 +805,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Sensors(1)"
 ```
 
 ## POST /Sensors
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
     "description": "PM 2.5 sensor",
@@ -721,7 +816,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
     "metadata": "http://particle-sensor.com/"
 }' "http://localhost:8080/v1.0/Sensors"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Sensors(1)",
@@ -735,10 +832,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /Sensors(:id)
-___Parameters___
-* id - The id of the Sensor to patch.
+
+**_Parameters_**
+
+- id - The id of the Sensor to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
     "description": "This is a new PM 2.5 sensor",
@@ -747,7 +847,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
     "metadata": "http://particle-sensor.com/"
 }' "http://localhost:8080/v1.0/Sensors"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Sensors(1)",
@@ -761,25 +863,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /Sensors(:id)
-___Parameters___
-* id - The id of the Sensor to delete.
+
+**_Parameters_**
+
+- id - The id of the Sensor to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Sensors(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /ObservedProperties
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/ObservedProperties"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -797,14 +907,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/ObservedPro
 ```
 
 ## GET /ObservedProperties(:id)
-___Parameters___
-* id - The id of the ObservedProperty to retrieve.
+
+**_Parameters_**
+
+- id - The id of the ObservedProperty to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/ObservedProperties(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/ObservedProperties(1)",
@@ -817,7 +932,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/ObservedPro
 ```
 
 ## POST /ObservedProperties
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "PM 2.5",
@@ -825,7 +942,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "definition": "https://airnow.gov/index.cfm?action=aqibasics.particle"
 }' "http://localhost:8080/v1.0/ObservedProperties"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/ObservedProperties(1)",
@@ -838,10 +957,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /ObservedProperties(:id)
-___Parameters___
-* id - The id of the ObservedProperty to patch.
+
+**_Parameters_**
+
+- id - The id of the ObservedProperty to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "New PM 2.5 Observation",
@@ -849,7 +971,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
   "definition": "https://airnow.gov/index.cfm?action=aqibasics.particle"
 }' "http://localhost:8080/v1.0/ObservedProperties"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/ObservedProperties(1)",
@@ -862,25 +986,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /ObservedProperties(:id)
-___Parameters___
-* id - The id of the ObservedProperty to delete.
+
+**_Parameters_**
+
+- id - The id of the ObservedProperty to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/ObservedProperties(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /Observations
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Observations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -900,14 +1032,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Observation
 ```
 
 ## GET /Observations(:id)
-___Parameters___
-* id - The id of the Observation to retrieve.
+
+**_Parameters_**
+
+- id - The id of the Observation to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Observations(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Observations(1)",
@@ -922,7 +1059,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Observation
 ```
 
 ## POST /Observations
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "phenomenonTime": "2016-11-18T11:04:15.790Z",
@@ -932,7 +1071,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "FeatureOfInterest":{"@iot.id": 1}
 }' "http://localhost:8080/v1.0/Observations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Observations(1)",
@@ -947,10 +1088,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /Observations(:id)
-___Parameters___
-* id - The id of the Observation to patch.
+
+**_Parameters_**
+
+- id - The id of the Observation to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "phenomenonTime": "2016-11-18T11:04:15.790Z",
@@ -960,7 +1104,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
   "FeatureOfInterest":{"@iot.id": 1}
 }' "http://localhost:8080/v1.0/Observations"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/Observations(1)",
@@ -975,25 +1121,33 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /Observations(:id)
-___Parameters___
-* id - The id of the Observation to delete.
+
+**_Parameters_**
+
+- id - The id of the Observation to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/Observations(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
-
 ## GET /FeaturesOfInterest
+
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/FeaturesOfInterest"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.count": 1,
@@ -1018,14 +1172,19 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/FeaturesOfI
 ```
 
 ## GET /FeaturesOfInterest(:id)
-___Parameters___
-* id - The id of the FeatureOfInterest to retrieve.
+
+**_Parameters_**
+
+- id - The id of the FeatureOfInterest to retrieve.
 
 ### Request
+
 ```ssh
 curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/FeaturesOfInterest(1)"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.selfLink": "http://localhost:8080/v1.0/FeaturesOfInterest(1)",
@@ -1045,7 +1204,9 @@ curl -X GET -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/FeaturesOfI
 ```
 
 ## POST /FeaturesOfInterest
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "Weather Station YYC.",
@@ -1060,7 +1221,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   }
 }' "http://localhost:8080/v1.0/FeaturesOfInterest"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.id": "1",
@@ -1080,10 +1243,13 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ```
 
 ## PATCH /FeaturesOfInterest(:id)
-___Parameters___
-* id - The id of the FeatureOfInterest to patch.
+
+**_Parameters_**
+
+- id - The id of the FeatureOfInterest to patch.
 
 ### Request
+
 ```ssh
 curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
   "name": "New Weather Station",
@@ -1098,7 +1264,9 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
   }
 }' "http://localhost:8080/v1.0/FeaturesOfInterest"
 ```
+
 ### Response
+
 ```ssh
 {
   "@iot.id": "1",
@@ -1118,20 +1286,27 @@ curl -X PATCH -H "Content-Type: application/json" -H "Cache-Control: no-cache" -
 ```
 
 ## DELETE /FeaturesOfInterest(:id)
-___Parameters___
-* id - The id of the FeatureOfInterest to delete.
+
+**_Parameters_**
+
+- id - The id of the FeatureOfInterest to delete.
 
 ### Request
+
 ```ssh
 curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8080/v1.0/FeaturesOfInterest(1)"
 ```
+
 ### Response
+
 ```ssh
 Response body empty. Response Headers: Status Code 204 No Content
 ```
 
 ## POST /CreateObservations
+
 ### Request
+
 ```ssh
 curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '
  [
@@ -1166,7 +1341,9 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
 ]
 ' "http://localhost:8080/v1.0/CreateObservations"
 ```
+
 ### Response
+
 ```ssh
 [
   "http://localhost:8080/v1.0/Observations(1)",
@@ -1174,4 +1351,3 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d
   "http://localhost:8080/v1.0/Observations(3)"
 ]
 ```
-

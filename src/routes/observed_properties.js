@@ -1,8 +1,5 @@
-import resource    from './resource';
-import {
-  excludedFields,
-  observedProperties
-} from '../constants';
+import resource from './resource'
+import { excludedFields, observedProperties } from '../constants'
 
 /**
  * Implementation of 8.2.6 "ObservedProperties"
@@ -49,9 +46,9 @@ import {
  * }
  **/
 
-const endpoint = observedProperties;
-const exclude  = excludedFields[observedProperties];
+const endpoint = observedProperties
+const exclude = excludedFields[observedProperties]
 
 module.exports = function observedPropertiesRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

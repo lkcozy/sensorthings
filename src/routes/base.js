@@ -1,9 +1,9 @@
-import express from 'express';
+import express from 'express'
 
-import { entities } from '../constants';
-import response     from '../response';
+import { entities } from '../constants'
+import response from '../response'
 
-let router = express.Router();
+let router = express.Router()
 
 /**
  * Implementation of 9.2.1 "Usage 1: no resource path" of the SensorThings
@@ -47,16 +47,16 @@ let router = express.Router();
  **/
 
 router.get('/', (req, res) => {
-  const prepath = response.getPrepath(req, req.originalUrl.replace(/\//g, ''));
+  const prepath = response.getPrepath(req, req.originalUrl.replace(/\//g, ''))
 
   const value = Object.keys(entities).map(key => {
     return {
-      'name'  : key,
-      'url'   : prepath + key
-    };
-  });
+      name: key,
+      url: prepath + key,
+    }
+  })
 
-  res.status(200).json({ value: value });
-});
+  res.status(200).json({ value: value })
+})
 
-exports.baseRouter = router;
+exports.baseRouter = router

@@ -2,11 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import resource from './resource';
-import {
-  excludedFields,
-  sensors
-} from '../constants';
+import resource from './resource'
+import { excludedFields, sensors } from '../constants'
 
 /**
  * Implementation of 8.2.5 "Sensor"
@@ -50,9 +47,9 @@ import {
  * }
  **/
 
-const endpoint = sensors;
-const exclude  = excludedFields[sensors];
+const endpoint = sensors
+const exclude = excludedFields[sensors]
 
 module.exports = function sensorsRouter(version) {
-  return resource(endpoint, exclude, version);
+  return resource(endpoint, exclude, version)
 }

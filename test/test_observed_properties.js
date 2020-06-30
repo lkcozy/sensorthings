@@ -1,6 +1,6 @@
-import commonTests  from './common';
-import { observedProperties } from './constants';
+import commonTests from './common'
+import { observedProperties } from './constants'
 
-const mandatory     = ['name', 'description', 'definition'];
+const mandatory = ['name', 'description', 'definition']
 
-commonTests(observedProperties, 8886, mandatory, []);
+commonTests(observedProperties, 8886, mandatory, [])

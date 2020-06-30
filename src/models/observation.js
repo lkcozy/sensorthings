@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
 /**
  * 8.2.7 Observation
@@ -52,99 +52,107 @@
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Observation = sequelize.define('Observations', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    phenomenonTime: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      get: function get() {
-        const time = this.getDataValue('phenomenonTime');
-        if (!time) {
-          return;
-        }
-        return new Date(time).toISOString();
+  const Observation = sequelize.define(
+    'Observations',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      set: function set(value) {
-        if (!value) {
-          return;
-        }
-        this.setDataValue('phenomenonTime', new Date(value).toISOString());
-      }
-    },
-    result: { type: DataTypes.STRING, allowNull: false },
-    resultTime: {
-      // Note: Many resource-constrained sensing devices do not have a clock.
-      // As a result, a client may omit resultTime when POST new Observations,
-      // even though resultTime is a mandatory property. When a SensorThings
-      // service receives a POST Observations without resultTime, the service
-      // SHALL assign a null value to the resultTime
-      type: DataTypes.DATE,
-      allowNull: true,
-      get: function get() {
-        const time = this.getDataValue('resultTime');
-        if (!time) {
-          return null;
-        }
-        return new Date(time).toISOString();
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
       },
-      set: function set(value) {
-        if (!value) {
-          this.setDataValue('resultTime', null);
-        }
-        this.setDataValue('resultTime', new Date(value).toISOString());
-      }
-    },
-    // XXX Define resultQuality property #16
-    // resultQuality: {},
-    validTime: {
-      type: DataTypes.DATE,
-      get: function get() {
-        const time = this.getDataValue('validTime');
-        if (!time) {
-          return;
-        }
-        return new Date(time).toISOString();
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
       },
-      set: function set(value) {
-        if (!value) {
-          return this.setDataValue('validTime', null);
-        }
-        this.setDataValue('validTime', new Date(value).toISOString());
-      }
+      phenomenonTime: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        get: function get() {
+          const time = this.getDataValue('phenomenonTime')
+          if (!time) {
+            return
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            return
+          }
+          this.setDataValue('phenomenonTime', new Date(value).toISOString())
+        },
+      },
+      result: { type: DataTypes.STRING, allowNull: false },
+      resultTime: {
+        // Note: Many resource-constrained sensing devices do not have a clock.
+        // As a result, a client may omit resultTime when POST new Observations,
+        // even though resultTime is a mandatory property. When a SensorThings
+        // service receives a POST Observations without resultTime, the service
+        // SHALL assign a null value to the resultTime
+        type: DataTypes.DATE,
+        allowNull: true,
+        get: function get() {
+          const time = this.getDataValue('resultTime')
+          if (!time) {
+            return null
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            this.setDataValue('resultTime', null)
+          }
+          this.setDataValue('resultTime', new Date(value).toISOString())
+        },
+      },
+      // XXX Define resultQuality property #16
+      // resultQuality: {},
+      validTime: {
+        type: DataTypes.DATE,
+        get: function get() {
+          const time = this.getDataValue('validTime')
+          if (!time) {
+            return
+          }
+          return new Date(time).toISOString()
+        },
+        set: function set(value) {
+          if (!value) {
+            return this.setDataValue('validTime', null)
+          }
+          this.setDataValue('validTime', new Date(value).toISOString())
+        },
+      },
+      parameters: { type: DataTypes.ARRAY(DataTypes.JSON) },
     },
-    parameters: { type: DataTypes.ARRAY(DataTypes.JSON) }
-  }, {
-    classMethods: {
-      associate: db => {
-        Observation.belongsTo(db.Datastreams);
-        Observation.associations.Datastream.mandatory = true;
-        Observation.belongsTo(db.FeaturesOfInterest);
-        // Issue #137: When creating an Observation without FeatureOfInterest,
-        // we should extract it from Locations
-        Observation.associations.FeatureOfInterest.mandatory = true;
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+    {
+      classMethods: {
+        associate: db => {
+          Observation.belongsTo(db.Datastreams)
+          Observation.associations.Datastream.mandatory = true
+          Observation.belongsTo(db.FeaturesOfInterest)
+          // Issue #137: When creating an Observation without FeatureOfInterest,
+          // we should extract it from Locations
+          Observation.associations.FeatureOfInterest.mandatory = true
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return Observation;
+  return Observation
 }

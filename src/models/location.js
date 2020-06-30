@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
-import { encodingTypes }   from '../constants';
-import * as ERR            from '../errors';
+import { encodingTypes } from '../constants'
+import * as ERR from '../errors'
 
 /**
  * 8.2.2 Location
@@ -57,95 +57,113 @@ import * as ERR            from '../errors';
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Location = sequelize.define('Locations', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const Location = sequelize.define(
+    'Locations',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      description: { type: DataTypes.STRING(500), allowNull: false },
+      encodingType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: [[encodingTypes.GEO_JSON]],
+        },
+      },
+      location: { type: DataTypes.GEOMETRY('POINT', 4326), allowNull: false },
     },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-    encodingType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [[ encodingTypes.GEO_JSON ]]
-      }
-    },
-    location: { type: DataTypes.GEOMETRY('POINT', 4326), allowNull: false }
-  }, {
-    classMethods: {
-      associate: db => {
-        Location.belongsToMany(db.Things, { through: 'ThingLocations' });
-        Location.belongsToMany(db.HistoricalLocations, {
-          through: 'HistoricalLocationsLocations'
-        });
-        // When a Thing has a new Location, a new HistoricalLocation SHALL
-        // be created and added to the Thing automatically by the service.
-        // The current Location of the Thing SHALL only be added to
-        // HistoricalLocation automatically by the service, and SHALL not
-        // be created as HistoricalLocation directly by user.
-        Location.associations.Things.afterAssociation =
-          (transaction, instance, associationId) => {
-          const historicalLocations =
-            Location.associations.HistoricalLocations;
-          return instance[historicalLocations.accessors.create]({
-            time: Date.now()
-          }, { transaction }).then(historicalLocation => {
-            const thing = db.HistoricalLocations.associations.Thing;
-            return historicalLocation[thing.accessors.set](associationId, {
-              transaction
-            }).then(() => {
-              // If there is already a Location with the same encodingType,
-              // return an error.
-              return db.Locations.findAndCountAll({
-                include: [{
-                  model: db.Things,
-                  where: { id: associationId }
-                }]
-              }).then(result => {
-                if (result.count > 0) {
-                  for (let i = 0; i < result.rows.length; i++) {
-                    if (result.rows[i].encodingType === instance.encodingType) {
-                      throw Object({
-                        errno: ERR.ERRNO_LOCATION_SAME_ENCODING_TYPE
-                      });
+    {
+      classMethods: {
+        associate: db => {
+          Location.belongsToMany(db.Things, { through: 'ThingLocations' })
+          Location.belongsToMany(db.HistoricalLocations, {
+            through: 'HistoricalLocationsLocations',
+          })
+          // When a Thing has a new Location, a new HistoricalLocation SHALL
+          // be created and added to the Thing automatically by the service.
+          // The current Location of the Thing SHALL only be added to
+          // HistoricalLocation automatically by the service, and SHALL not
+          // be created as HistoricalLocation directly by user.
+          Location.associations.Things.afterAssociation = (
+            transaction,
+            instance,
+            associationId
+          ) => {
+            const historicalLocations =
+              Location.associations.HistoricalLocations
+            return instance[historicalLocations.accessors.create](
+              {
+                time: Date.now(),
+              },
+              { transaction }
+            ).then(historicalLocation => {
+              const thing = db.HistoricalLocations.associations.Thing
+              return historicalLocation[thing.accessors.set](associationId, {
+                transaction,
+              }).then(() => {
+                // If there is already a Location with the same encodingType,
+                // return an error.
+                return db.Locations.findAndCountAll({
+                  include: [
+                    {
+                      model: db.Things,
+                      where: { id: associationId },
+                    },
+                  ],
+                }).then(result => {
+                  if (result.count > 0) {
+                    for (let i = 0; i < result.rows.length; i++) {
+                      if (
+                        result.rows[i].encodingType === instance.encodingType
+                      ) {
+                        throw Object({
+                          errno: ERR.ERRNO_LOCATION_SAME_ENCODING_TYPE,
+                        })
+                      }
                     }
                   }
-                }
-              });
-            });
-          });
-        };
-      }
-    },
-    hooks: {
-      beforeValidate: (data) => {
-        if (data.location) {
-          data.location.crs = {
-            type: 'name',
-            properties: { name: 'EPSG:4326' }
-          };
-        }
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+                })
+              })
+            })
+          }
+        },
+      },
+      hooks: {
+        beforeValidate: data => {
+          if (data.location) {
+            data.location.crs = {
+              type: 'name',
+              properties: { name: 'EPSG:4326' },
+            }
+          }
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return Location;
+  return Location
 }

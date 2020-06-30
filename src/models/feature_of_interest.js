@@ -2,12 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
-import {
-  encodingTypes,
-  featuresOfInterest
-} from '../constants';
+import { encodingTypes, featuresOfInterest } from '../constants'
 
 /**
  * 8.2.8 FeatureOfInterest Entity
@@ -49,65 +46,70 @@ import {
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const FeatureOfInterest = sequelize.define(featuresOfInterest, {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const FeatureOfInterest = sequelize.define(
+    featuresOfInterest,
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      description: { type: DataTypes.STRING(500), allowNull: false },
+      encodingType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: [[encodingTypes.GEO_JSON, encodingTypes.LOCATION_TYPE]],
+        },
+      },
+      feature: {
+        type: DataTypes.GEOMETRY('POINT', 4326),
+        allowNull: false,
+      },
     },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-    encodingType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [[
-          encodingTypes.GEO_JSON,
-          encodingTypes.LOCATION_TYPE
-        ]]
-      }
-    },
-    feature: {
-      type: DataTypes.GEOMETRY('POINT', 4326),
-      allowNull: false
+    {
+      classMethods: {
+        associate: db => {
+          FeatureOfInterest.hasMany(db.Observations)
+        },
+      },
+      hooks: {
+        beforeValidate: data => {
+          if (data.feature) {
+            data.feature.crs = {
+              type: 'name',
+              properties: { name: 'EPSG:4326' },
+            }
+          }
+        },
+      },
+      name: {
+        plural: 'FeaturesOfInterest',
+        singular: 'FeatureOfInterest',
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
     }
-  }, {
-    classMethods: {
-      associate: db => {
-        FeatureOfInterest.hasMany(db.Observations);
-      }
-    },
-    hooks: {
-      beforeValidate: (data) => {
-        if (data.feature) {
-          data.feature.crs = {
-            type: 'name',
-            properties: { name: 'EPSG:4326' }
-          };
-        }
-      }
-    },
-    name: {
-      plural: 'FeaturesOfInterest',
-      singular: 'FeatureOfInterest'
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+  )
 
-  return FeatureOfInterest;
+  return FeatureOfInterest
 }

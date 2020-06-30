@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+'use strict'
 
 /**
  * 8.2.6 ObservedProperty Entity
@@ -32,44 +32,52 @@
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const ObservedProperty = sequelize.define('ObservedProperties', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const ObservedProperty = sequelize.define(
+    'ObservedProperties',
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      clientId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      definition: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validation: {
+          isUrl: true,
+        },
+      },
+      description: { type: DataTypes.STRING(500), allowNull: false },
     },
-    userId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    clientId: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    name: { type: DataTypes.STRING(255), allowNull: false },
-    definition: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      validation: {
-        isUrl: true
-      }
-    },
-    description: { type: DataTypes.STRING(500), allowNull: false },
-  }, {
-    classMethods: {
-      associate: db => {
-        ObservedProperty.hasMany(db.Datastreams);
-      }
-    },
-    indexes: [{
-      fields: ['clientId']
-    }, {
-      fields: ['userId']
-    }, {
-      fields: ['clientId', 'userId']
-    }]
-  });
+    {
+      classMethods: {
+        associate: db => {
+          ObservedProperty.hasMany(db.Datastreams)
+        },
+      },
+      indexes: [
+        {
+          fields: ['clientId'],
+        },
+        {
+          fields: ['userId'],
+        },
+        {
+          fields: ['clientId', 'userId'],
+        },
+      ],
+    }
+  )
 
-  return ObservedProperty;
+  return ObservedProperty
 }
