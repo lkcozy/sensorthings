@@ -1,6 +1,6 @@
 {
-  "name": "sensorthings",
-  "version": "0.6.0",
+  "name": "sensorthings-server",
+  "version": "0.0.1",
   "description": "Node implementation of the OGC SensorThings API",
   "main": "dist/sensorthings.js",
   "scripts": {
@@ -39,8 +39,8 @@
     "express": "^4.14.0",
     "morgan-body": "^2.4.14 ",
     "odata-parser": "mozilla-sensorweb/node-odata-parser",
-    "pg": "^6.1.0",
-    "sequelize": "^3.24.4"
+    "pg": "6.1.0",
+    "sequelize": "3.35.1"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",

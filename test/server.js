@@ -10,11 +10,11 @@ app.use(bodyParser.json())
 let hooks = {}
 const config = {
   db: {
-    host: 'localhost',
-    port: 5432,
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
     name: 'sensorthingstest',
     user: 'postgres',
-    pass: '12345678',
+    pass: process.env.POSTGRES_PASSWORD,
     hooks: {
       beforeCreate: () => {
         hooks.beforeCreate = true
