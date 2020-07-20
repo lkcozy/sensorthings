@@ -25,13 +25,26 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Check out repository code
+      - name: 🔎 Check out repository code
         uses: actions/checkout@v2
 
-      - name: Install Dependencies
+      - name: ⚙️ Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: 📝 Cache dependencies
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 📦 Install Dependencies
         run: yarn
 
-      - name: Test
+      - name: 🧪 Test
         run: yarn test
         env:
           POSTGRES_HOST: localhost

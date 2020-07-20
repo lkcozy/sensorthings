@@ -11,7 +11,7 @@ const config = {
   db: {
     host: 'localhost',
     port: 5432,
-    name: 'sensorthingsexample',
+    name: 'sensorthings',
     user: 'postgres',
     password: '12345678',
   },

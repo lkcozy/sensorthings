@@ -76,6 +76,6 @@ We are automatically running the [Test Suite for the OGC SensorThings API](https
 
 - [ ] Integrate the Github Action
 - [ ] Publish the package through the Github Actions
-- [ ] Add the docker support
+- [ ] Add the [docker support](https://codewithhugo.com/node-postgres-express-docker-compose/)
 - [ ] Deploy the demo server to the Heroku
 - [ ] Integrate with [bottleneck](https://github.com/SGrondin/bottleneck)
